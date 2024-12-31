@@ -4,6 +4,9 @@ use rand::Rng;
 mod init;
 mod render;
 mod physics;
+mod shapes;
+
+use shapes::ShapeKind;
 
 /*
 FEATURES (going to be) SUPPORTED IN SIMULATION:
@@ -21,8 +24,15 @@ struct World { // How does the world interact with objects with properties such 
 }
 
 #[derive(Clone)]
+struct ObjectProperty {
+    shape: ShapeKind,
+    color: Color,
+    stationary: bool,
+}
+
+#[derive(Clone)]
 struct Object { // Properties of an object (Right now sphere only)
-    radius: f32,
+    property: ObjectProperty,
     position: Vector3,
     velocity: Vector3,
     force: Vector3,
@@ -52,8 +62,12 @@ fn main_loop(handle: RaylibHandle, thread: RaylibThread, camera: Camera3D, objec
     for _ in 0..400 {
 
         let sphere = Object {
-            radius: 10.0,
-            position: Vector3::zero(),
+            property: ObjectProperty {
+                shape: ShapeKind::Sphere(10.0),
+                color: Color::RED,
+                stationary: false,
+            },
+            position: Vector3::new(0.0, 20.0, 0.0),
             velocity: Vector3::new(rng.gen_range(5.0..10.0), 2.0, rng.gen_range(5.0..10.0)),
             force: Vector3::zero(),
             mass: 1.0,
@@ -61,6 +75,20 @@ fn main_loop(handle: RaylibHandle, thread: RaylibThread, camera: Camera3D, objec
 
         objects.push(sphere.clone());
     }
+
+    let plane = Object {
+        property: ObjectProperty {
+            shape: ShapeKind::Plane(250.0, 250.0),
+            color: Color::BEIGE,
+            stationary: true,
+        },
+        position: Vector3::zero(),
+        velocity: Vector3::zero(),
+        force: Vector3::zero(),
+        mass: 0.0, // For static objects
+    };
+
+    objects.push(plane);
 
     render::update(handle, thread, camera, objects, &world);
 }

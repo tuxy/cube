@@ -1,6 +1,7 @@
 use raylib::prelude::*;
 use crate::{Object, World};
 use crate::physics;
+use crate::shapes::ShapeKind::*;
 
 pub fn update(mut handle: RaylibHandle, thread: RaylibThread, mut camera: Camera3D, objects: &mut Vec<Object>, world: &World) {
     while !handle.window_should_close() {
@@ -17,10 +18,18 @@ pub fn update(mut handle: RaylibHandle, thread: RaylibThread, mut camera: Camera
             // MAIN CUBE
             for i in &mut *objects {
 
-                physics::add_velocity(i, world);
+                physics::step(i, world);
 
-                d2.draw_sphere(i.position, i.radius, Color::RED);
-                // d2.draw_sphere_wires(i.position, i.radius, 10, 10, Color::MAROON);
+
+                match i.property.shape {
+                    Sphere(r) => {
+                        d2.draw_sphere(i.position, r, i.property.color);
+                        d2.draw_sphere_wires(i.position, r, 10, 10, Color::MAROON);
+                    },
+                    Plane(x, z) => {
+                        d2.draw_plane(i.position, Vector2::new(x, z), i.property.color);
+                    },
+                }
             }
             
             // reference grid

@@ -7,6 +7,8 @@ pub fn initialisation(w: i32, h: i32) -> (RaylibHandle, RaylibThread, Camera3D) 
 
     let (handle, thread) = raylib::init()
         .size(w, h)
+        .msaa_4x()
+        .vsync()
         .build();
 
     // Configure camera options
