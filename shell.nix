@@ -4,32 +4,27 @@
 with pkgs;
 mkShell {
   buildInputs = [
-    cargo
-    rustc
     rustup
-    rust-analyzer
+    raylib
     cmake
-    glslang
-    vulkan-headers
-    vulkan-loader
-    vulkan-tools
-    vulkan-validation-layers
-    glfw
-    glfw-wayland  
-    freetype
     clang
-    libclang.lib
+    pkg-config
     wayland
+    glfw
+    libGL
+    xorg.libXrandr
+    xorg.libXinerama
+    xorg.libXcursor
+    xorg.libXi
   ];
 
   # Env variabels
   shellHook = ''
-      export LD_LIBRARY_PATH="${glfw}/lib:${freetype}/lib:${vulkan-loader}/lib:${vulkan-validation-layers}/lib:${wayland}/lib"
-      export VULKAN_SDK="${vulkan-headers}"
-      export VK_LAYER_PATH="${vulkan-validation-layers}/share/vulkan/explicit_layer.d"
+      export LD_LIBRARY_PATH="${glfw}/lib:${freetype}/lib:${wayland}/lib:${raylib}/lib"
       export LIBCLANG_PATH="${libclang.lib}/lib"
       export CMAKE_PREFIX_PATH="${glfw}/lib/cmake/glfw3"
       export CMAKE_CXX_COMPILER="/run/current-system/sw/bin/c++"
       export CMAKE_C_COMPILER="/run/current-system/sw/bin/cc"
+      export RL="${raylib}"
   '';
 }
