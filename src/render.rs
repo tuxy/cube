@@ -15,7 +15,7 @@ pub fn update(mut handle: RaylibHandle, thread: RaylibThread, mut camera: Camera
 
         let mut display = handle.begin_drawing(&thread);
 
-        display.clear_background(Color::RAYWHITE);
+        display.clear_background(Color::BLACK);
         {
             let mut d2 = display.begin_mode3D(camera);
 
@@ -24,10 +24,7 @@ pub fn update(mut handle: RaylibHandle, thread: RaylibThread, mut camera: Camera
             for i in &mut objects {
                 for j in &mut objects_copy {
                     if i != j {
-                        if i.position.distance_to(j.position) <= 20.0 { // Only applies to sphere->other interactions
-                            i.velocity =  physics::handle_collision(i, j);
-                            println!("COLLISION DETECTED");
-                        }
+                        i.velocity =  physics::handle_collision(i, j);
                     }
                 }
             }
@@ -51,7 +48,7 @@ pub fn update(mut handle: RaylibHandle, thread: RaylibThread, mut camera: Camera
             }
             
             // reference grid
-            d2.draw_grid(50, 5.0);
+            d2.draw_grid(500, 5.0);
         }
 
         // println!("{}", display.get_fps());

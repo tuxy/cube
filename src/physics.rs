@@ -30,7 +30,6 @@ pub fn handle_collision(i: &Object, j: &Object) -> Vector3 {
             return ball_plane_collision_response(j, i, radius);
         }
         (_, _) => {
-            println!("Collision currently not supported");
             return i.velocity;
         }
     }
@@ -41,7 +40,7 @@ fn ball_collision_response(i: &Object, j: &Object, radius_i: f32, radius_j: f32)
     let mut vec_position_difference = i.position - j.position;
     let rel_distance = radius_i + radius_j - i.position.distance_to(j.position);
     if i.position.distance_to(j.position) > radius_i + radius_j {
-        return Vector3::zero();
+        return i.velocity;
     }
 
     vec_position_difference.normalize();
@@ -58,34 +57,22 @@ fn ball_collision_response(i: &Object, j: &Object, radius_i: f32, radius_j: f32)
 }
 
 fn ball_plane_collision_response(plane: &Object, sphere: &Object, radius: f32) -> Vector3 {
-    // Normal is i.position (Just to take note)
-    // Figures out which object is the plane
-    let (plane_x, plane_z) = match plane.property.shape {
-        Plane(x, z) => (x, z),
-        _ => {
-            return Vector3::zero();
-        }
-    };
+     // Very simple and performant code, BUT ONLY WORKS FOR FLAT PLANES
     let normal = plane.position.normalized().to_array()[1];
 
     let sphere_position = sphere.position.to_array();
+    let distance_to_normal = sphere_position[1] - normal;
 
-    let distance_to_center = plane_x*sphere_position[0]+normal*sphere_position[1]+plane_z*sphere_position[2];
-    // taken from https://stackoverflow.com/questions/22093749/c-plane-sphere-collision-detection
-
-    if distance_to_center >= radius {
-        println!("Gotcha!");
-        return Vector3::zero();
+    if distance_to_normal > radius {
+        return sphere.velocity;
     }
 
-    let sphere_final_v = sphere.velocity.to_array();
-
-    let x = sphere_final_v[0] * ((plane.bounciness + sphere.bounciness)/2.0);
-    let y = sphere_final_v[1] * ((plane.bounciness + sphere.bounciness)/2.0);
-    let z = sphere_final_v[2] * ((plane.bounciness + sphere.bounciness)/2.0);
-
-    println!("{}, {}, {}", x, y, z);
+    let sphere_v_array = sphere.velocity.to_array();
+        
+    let x = sphere_v_array[0] * ((plane.bounciness + sphere.bounciness)/2.0);
+    let y = sphere_v_array[1] * ((plane.bounciness + sphere.bounciness)/2.0);
+    let z = sphere_v_array[2] * ((plane.bounciness + sphere.bounciness)/2.0);
 
     // Inverts the y axis only (Bounce), in addition to adding the average bounciness.
-    return Vector3::new(x, -y, z); // As a test (No real values)
+    return Vector3::new(x, y.abs(), z); // As a test (No real values)
 }

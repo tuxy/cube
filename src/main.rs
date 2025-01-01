@@ -1,3 +1,4 @@
+use rand::Rng;
 use raylib::prelude::*;
 
 mod init;
@@ -69,27 +70,29 @@ fn main_loop(
         },
     };
 
-    // let rng = rand::thread_rng();
+    let mut rng = rand::thread_rng();
 
-    let sphere = Object {
-        property: ObjectProperty {
-            shape: ShapeKind::Sphere(10.0),
-            color: Color::RED,
-            wire_color: Color::MAROON,
-            stationary: false,
-        },
-        position: Vector3::new(0.4, 100.0, 0.0),
-        relation: vec![],
-        velocity: Vector3::new(0.0, 5.0, 0.0),
-        bounciness: 1.0,
-        force: Vector3::zero(),
-        mass: 1.0,
-    };
-    objects.push(sphere.clone());
+    for _ in 0..2 {
+        let sphere = Object {
+            property: ObjectProperty {
+                shape: ShapeKind::Sphere(4.0),
+                color: Color::RED,
+                wire_color: Color::BLACK,
+                stationary: false,
+            },
+            position: Vector3::new(rng.gen_range(0.0..5.0), rng.gen_range(30.0..50.0), rng.gen_range(0.0..5.0)),
+            relation: vec![],
+            velocity: Vector3::new(rng.gen_range(0.0..0.1), 0.0, rng.gen_range(0.0..0.1)),
+            bounciness: 1.0,
+            force: Vector3::zero(),
+            mass: 1.0,
+        };
+        objects.push(sphere.clone());
+    }
 
     let plane = Object {
         property: ObjectProperty {
-            shape: ShapeKind::Plane(250.0, 250.0),
+            shape: ShapeKind::Plane(2500.0, 2500.0),
             color: Color::ALICEBLUE,
             wire_color: Color::BLUE,
             stationary: true,
