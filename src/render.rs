@@ -19,11 +19,13 @@ pub fn update(mut handle: RaylibHandle, thread: RaylibThread, mut camera: Camera
         {
             let mut d2 = display.begin_mode3D(camera);
 
-            for i in &objects.clone() {
-                for j in &objects.clone() {
+            let mut objects_copy = objects.clone();
+
+            for i in &mut objects {
+                for j in &mut objects_copy {
                     if i != j {
-                        if i.position.distance_to(j.position) <= 20.0 {
-                            physics::collision_response(i, j);
+                        if i.position.distance_to(j.position) <= 20.0 { // Only applies to sphere->other interactions
+                            i.velocity =  physics::handle_collision(i, j);
                             println!("COLLISION DETECTED");
                         }
                     }
@@ -31,7 +33,6 @@ pub fn update(mut handle: RaylibHandle, thread: RaylibThread, mut camera: Camera
             }
             // This is extremely computationally expensive
             // One way to fix this is to order the priority of checking by relative distance
-            
 
             // MAIN CUBE 
             for i in &mut *objects {
