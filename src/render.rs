@@ -3,11 +3,18 @@ use crate::{Object, World};
 use crate::physics;
 use crate::shapes::ShapeKind::*;
 
+use crate::init;
+
 pub fn update(mut handle: RaylibHandle, thread: RaylibThread, mut camera: Camera3D, objects: &mut Vec<Object>, world: &World) {
 
+    let mut running = false; // Paused by default
     let mut objects = objects.clone();
 
     while !handle.window_should_close() {
+
+        if handle.is_key_pressed(KeyboardKey::KEY_Z) {
+            running = true;
+        }
 
         let dt = handle.get_frame_time();
 
@@ -21,10 +28,12 @@ pub fn update(mut handle: RaylibHandle, thread: RaylibThread, mut camera: Camera
 
             let mut objects_copy = objects.clone();
 
-            for i in &mut objects {
-                for j in &mut objects_copy {
-                    if i != j {
-                        i.velocity =  physics::handle_collision(i, j);
+            if running { // If simulation is running
+                for i in &mut objects {
+                    for j in &mut objects_copy {
+                        if i != j {
+                            i.velocity =  physics::handle_collision(i, j);
+                        }
                     }
                 }
             }
@@ -34,7 +43,9 @@ pub fn update(mut handle: RaylibHandle, thread: RaylibThread, mut camera: Camera
             // MAIN CUBE 
             for i in &mut *objects {
 
-                physics::step(i, world, dt);
+                if running { // Steps each object in the list by "1"
+                    physics::step(i, world, dt);
+                }
 
                 match i.property.shape {
                     Sphere(r) => {
@@ -54,6 +65,6 @@ pub fn update(mut handle: RaylibHandle, thread: RaylibThread, mut camera: Camera
         // println!("{}", display.get_fps());
 
         display.draw_fps(0, 0);
-        // display.draw_text("Press Z to start/stop simulation", init::WINDOW_WIDTH/2 - 50, init::WINDOW_HEIGHT-20, 16, Color::BLACK);
+        display.draw_text("Press Z to start simulation", init::WINDOW_WIDTH/2 - 50, init::WINDOW_HEIGHT-20, 16, Color::BLACK);
     }
 }

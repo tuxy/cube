@@ -80,7 +80,7 @@ fn main_loop(
                 wire_color: Color::BLACK,
                 stationary: false,
             },
-            position: Vector3::new(rng.gen_range(0.0..5.0), rng.gen_range(30.0..50.0), rng.gen_range(0.0..5.0)),
+            position: Vector3::new(rng.gen_range(0.0..10.0), rng.gen_range(30.0..50.0), rng.gen_range(0.0..10.0)),
             relation: vec![],
             velocity: Vector3::new(rng.gen_range(0.0..0.1), 0.0, rng.gen_range(0.0..0.1)),
             bounciness: 1.0,
