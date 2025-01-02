@@ -27,24 +27,23 @@ pub fn update(mut handle: RaylibHandle, thread: RaylibThread, mut camera: Camera
             let mut d2 = display.begin_mode3D(camera);
 
             let mut objects_copy = objects.clone();
-
-            if running { // If simulation is running
-                for i in &mut objects {
-                    for j in &mut objects_copy {
-                        if i != j {
-                            i.velocity =  physics::handle_collision(i, j);
-                        }
-                    }
-                }
-            }
             // This is extremely computationally expensive
             // One way to fix this is to order the priority of checking by relative distance
-
+            
             // MAIN CUBE 
-            for i in &mut *objects {
+            for i in &mut objects {
 
                 if running { // Steps each object in the list by "1"
-                    physics::step(i, world, dt);
+                    for j in &mut objects_copy { // In order to match type, mutability isn't taken advantage of 
+                        if i != j {
+                            i.velocity = physics::handle_collision(i, j);
+                        } 
+                    }
+                    {
+                        let a = physics::step(i, world, dt);
+                        i.velocity = physics::smooth(a.0);
+                        i.position = a.1;
+                    }
                 }
 
                 match i.property.shape {

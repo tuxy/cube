@@ -3,19 +3,32 @@ use raylib::math::Vector3;
 
 use crate::{Object, World};
 
-// Perform all physics calculations for all objects in each step (TODO: How about ignoring stationary ones?)
-pub fn step(object: &mut Object, world: &World, dt: f32) {
-    if !object.property.stationary {
-        // Gravity (TODO Better way?)             16.67 is the frametime for 60fps. handle.get_frame_time() can get the frametime, just too lazy right now
-        object.force += world.gravity * object.mass;
-        object.velocity += (object.force / object.mass) * dt;
+pub fn smooth(vec: Vector3) -> Vector3 { // Custom vector smoothing
 
-        object.position += object.velocity;
-        object.force = Vector3::zero();
-    }
+    let vec_array: [f32; 3] = vec.to_array();
+    let smooth_factor: f32 = 1000.0; // Lower = smoother
+
+    let smoothed_y = (vec_array[1] * smooth_factor).round().floor() / smooth_factor;
+
+    Vector3::new(vec_array[0], smoothed_y, vec_array[0])
 }
 
-// Returns
+// Perform all physics calculations for all objects in each step (TODO: How about ignoring stationary ones?)
+pub fn step(object: &Object, world: &World, dt: f32) -> (Vector3, Vector3) { // Returns (Velocity, Pos)
+    if !object.property.stationary {
+
+        // Gravity (TODO Better way?)             16.67 is the frametime for 60fps. handle.get_frame_time() can get the frametime, just too lazy right now
+        let force = object.force + world.gravity * object.mass;
+        let v = object.velocity + (force / object.mass) * dt;
+
+        let pos = object.position + object.velocity;
+        
+        return (v, pos);
+    }
+    return (Vector3::zero(), Vector3::zero());
+}
+
+// Read-only for objects, only returns what will happen
 pub fn handle_collision(i: &Object, j: &Object) -> Vector3 {
     // The 2 objects (Assuming they are both non-stationary)
     // Different collision matches
@@ -30,7 +43,7 @@ pub fn handle_collision(i: &Object, j: &Object) -> Vector3 {
             return ball_plane_collision_response(j, i, radius);
         }
         (_, _) => {
-            return i.velocity;
+            return Vector3::zero();
         }
     }
 }
@@ -64,7 +77,7 @@ fn ball_plane_collision_response(plane: &Object, sphere: &Object, radius: f32) -
     let distance_to_normal = sphere_position[1] - normal;
 
     if distance_to_normal > radius {
-        return sphere.velocity;
+        return sphere.velocity; // Do nothing
     }
 
     let sphere_v_array = sphere.velocity.to_array();

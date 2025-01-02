@@ -13,7 +13,7 @@ pub fn initialisation(w: i32, h: i32) -> (RaylibHandle, RaylibThread, Camera3D) 
 
     // Configure camera options
     let camera = Camera3D::perspective(
-        Vector3::new(100.0, 25.0, 100.0),
+        Vector3::new(-200.0, 100.0, 200.0),
         Vector3::new(0.0, 10.0, 0.0),
         Vector3::new(0.0, 1.0, 0.0),
         55.0,

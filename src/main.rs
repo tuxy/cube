@@ -72,17 +72,17 @@ fn main_loop(
 
     let mut rng = rand::thread_rng();
 
-    for _ in 0..2 {
-        let sphere = Object {
+    for _ in 0..200 { // Spawn 200 spheres, the upper limit for my graphics card.
+        let sphere: Object = Object {
             property: ObjectProperty {
                 shape: ShapeKind::Sphere(4.0),
                 color: Color::RED,
                 wire_color: Color::BLACK,
                 stationary: false,
             },
-            position: Vector3::new(rng.gen_range(0.0..10.0), rng.gen_range(30.0..50.0), rng.gen_range(0.0..10.0)),
+            position: Vector3::new(rng.gen_range(0.0..100.0), rng.gen_range(40.0..70.0), rng.gen_range(0.0..100.0)),
             relation: vec![],
-            velocity: Vector3::new(rng.gen_range(0.0..0.1), 0.0, rng.gen_range(0.0..0.1)),
+            velocity: Vector3::new(0.0, rng.gen_range(0.2..1.0), 0.0),
             bounciness: 1.0,
             force: Vector3::zero(),
             mass: 1.0,
@@ -100,7 +100,7 @@ fn main_loop(
         position: Vector3::zero(),
         relation: vec![],
         velocity: Vector3::zero(),
-        bounciness: 0.8,
+        bounciness: 0.2,
         force: Vector3::zero(),
         mass: 0.0,
     };
